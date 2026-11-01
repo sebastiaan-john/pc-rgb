@@ -1,5 +1,3 @@
-<img src="assets/icon.svg" width="64" height="64" alt="">
-
 # pc-rgb
 
 A tiny, fast replacement for SignalRGB if all you want is colors. It's one ~540 KB native
