@@ -46,7 +46,7 @@ ever rendered. Static colors sleep and only re-send every 5 s. Animated effects 
    running. Two apps driving the same controller will fight. Also turn off Windows
    *Dynamic Lighting* for the motherboard.
 3. Download `pc-rgb.exe` (or build it, see below), put it somewhere permanent (e.g.
-   `%LOCALAPPDATA%Programspc-rgb`), and run it. It asks for admin once (needed for RAM).
+   `%LOCALAPPDATA%\Programs\pc-rgb\`), and run it. It asks for admin once (needed for RAM).
    If you decline, the motherboard and GPU still work. On first launch it adds a **pc-rgb**
    Start Menu shortcut, so you can find it again with Windows search.
 4. Click the tray icon and turn on **Start with Windows**. That creates a logon task with
