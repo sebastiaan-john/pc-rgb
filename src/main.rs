@@ -126,5 +126,7 @@ fn main() {
         let _ = config::Settings::default().save();
     }
     let settings = config::Settings::load();
+    // Off the startup path: spawning PowerShell takes a few hundred ms.
+    std::thread::spawn(|| autostart::ensure_shortcut(false));
     tray::run(settings);
 }

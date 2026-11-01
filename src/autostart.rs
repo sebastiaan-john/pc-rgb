@@ -30,6 +30,7 @@ pub fn set(on: bool) -> bool {
     if !on {
         return schtasks(&["/Delete", "/TN", TASK, "/F"]);
     }
+    ensure_shortcut(true);
     let Ok(exe) = std::env::current_exe() else { return false };
     let user = format!(
         "{}\\{}",
@@ -64,4 +65,32 @@ pub fn set(on: bool) -> bool {
     let ok = schtasks(&["/Create", "/TN", TASK, "/XML", &path.to_string_lossy(), "/F"]);
     let _ = std::fs::remove_file(path);
     ok
+}
+
+/// Start Menu shortcut so the app can be found via Windows search. Created on launch if
+/// missing; `force` rewrites it (e.g. after the exe moved).
+pub fn ensure_shortcut(force: bool) {
+    let Some(appdata) = std::env::var_os("APPDATA") else { return };
+    let lnk = std::path::PathBuf::from(appdata).join(r"Microsoft\Windows\Start Menu\Programs\pc-rgb.lnk");
+    if lnk.exists() && !force {
+        return;
+    }
+    let Ok(exe) = std::env::current_exe() else { return };
+    let dir = exe.parent().map(|p| p.to_path_buf()).unwrap_or_default();
+    // Paths go through env vars so no quoting/escaping is needed in the script.
+    let script = "$s = (New-Object -ComObject WScript.Shell).CreateShortcut($env:PCRGB_LNK); \
+                  $s.TargetPath = $env:PCRGB_EXE; $s.WorkingDirectory = $env:PCRGB_DIR; \
+                  $s.Description = 'pc-rgb lighting'; $s.Save()";
+    let ok = Command::new("powershell")
+        .args(["-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-Command", script])
+        .env("PCRGB_LNK", &lnk)
+        .env("PCRGB_EXE", &exe)
+        .env("PCRGB_DIR", &dir)
+        .stdin(Stdio::null())
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .creation_flags(CREATE_NO_WINDOW)
+        .status()
+        .is_ok_and(|s| s.success());
+    crate::log(&format!("start menu shortcut {}: {}", if ok { "written" } else { "failed" }, lnk.display()));
 }

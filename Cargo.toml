@@ -1,6 +1,6 @@
 [package]
 name = "pc-rgb"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "Tiny, fast SignalRGB alternative: tray app that drives Gigabyte IT5711 motherboards, MSI RTX 50 GPUs and Corsair DDR5 RGB directly"
 license = "MIT"
